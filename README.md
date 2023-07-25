@@ -6,7 +6,7 @@ This repository contains a script that enables the conversion of MuJoCo models (
 
 Before using the script, ensure that you have the following:
 
-1. Unity installed on your system (tested with Unity 20xx.x, but it should work with other versions).
+1. Unity installed on your system (tested with Unity 2022.3.4f1, but it should work with other versions).
 2. A Unity project set up with basic prefabs representing the desired objects for conversion. These prefabs will serve as the basis for creating the MuJoCo models in Unity.
 
 ## Getting Started
