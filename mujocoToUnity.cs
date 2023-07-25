@@ -199,31 +199,33 @@ public class MuJoCoSceneParser : MonoBehaviour
         - u.z points to the left
 
         So, to correctly map the axes from MuJoCo to Unity, we need to swap:
-        - m.x with u.z
-        - m.y with u.x
+        - m.x with u.x
+        - m.y with u.z
         - m.z with u.y
     */
     {
         string[] values = vectorString.Split(' ');
-
+        // Radius (e.g Sphere)
         if (values.Length == 1)
         {
-            float z = float.Parse(values[0]);
+            float r = float.Parse(values[0]);
 
-            return new Vector3(0.0f, 0.0f, z);
+            return new Vector3(r, r, r);
         }
+        // Height and radius (e.g cylinder)
         else if (values.Length == 2)
         {
-            float z = float.Parse(values[0]);
+            float r = float.Parse(values[0]);
             // Geom cylinder height parameter represents half-height of cylinder height.
             float h = float.Parse(values[1]) * 0.5f;
 
-            return new Vector3(x, 0.0f, z);
+            return new Vector3(r, h, r);
         }
+        // Height, width and depth
         else if (values.Length == 3)
         {
-            float z = float.Parse(values[0]);
-            float x = float.Parse(values[1]);
+            float x = float.Parse(values[0]);
+            float z = float.Parse(values[1]);
             float y = float.Parse(values[2]);
 
             return new Vector3(x, y, z);
