@@ -61,13 +61,12 @@ public class MuJoCoSceneParser : MonoBehaviour
                 else if (geomType == "sphere")
                 {
                     Vector3 size = ParseSize(geomNode.Attributes["size"], geomType);
-                    float radius = size.z;
 
                     Vector3 position = ParsePosition(geomNode.Attributes["pos"], geomType);
                     Quaternion rotation = ParseRotation(geomNode.Attributes["quat"], geomType);
 
                     GameObject sphere = Instantiate(spherePrefab, position, rotation);
-                    sphere.transform.localScale = new Vector3(radius, radius, radius);
+                    sphere.transform.localScale = size;
                 }
 
                 else if (geomType == "box")
@@ -82,14 +81,12 @@ public class MuJoCoSceneParser : MonoBehaviour
                 else if (geomType == "cylinder")
                 {
                     Vector3 size = ParseSize(geomNode.Attributes["size"], geomType);
-                    float radius = size.z * 0.5f;
-                    float height = size.z;
-
                     Vector3 position = ParsePosition(geomNode.Attributes["pos"], geomType);
+
                     Quaternion rotation = ParseRotation(geomNode.Attributes["quat"], geomType);
 
                     GameObject cylinder = Instantiate(cylinderPrefab, position, rotation);
-                    cylinder.transform.localScale = new Vector3(radius * 2f, height, radius * 2f);
+                    cylinder.transform.localScale = size;
                 }
                     // Add more conditions for other geometry types if needed
             }
@@ -127,8 +124,19 @@ public class MuJoCoSceneParser : MonoBehaviour
         }
         else
         {
-            // Access the value of the "position" attribute and parse it to vector
-            position = ParseVector3(positionAttribute.Value);
+            if (geomType == "cylinder")
+            {
+                // Half-height values changes y position in half.
+                position = ParseVector3Position(positionAttribute.Value);
+
+            }
+            else
+            {
+                // Access the value of the "position" attribute and parse it to vector
+                position = ParseVector3(positionAttribute.Value);
+
+            }
+
         }
 
         return position;
@@ -151,6 +159,25 @@ public class MuJoCoSceneParser : MonoBehaviour
         }
 
         return rotation;
+    }
+
+    Vector3 ParseVector3Position(string vectorString)
+    {
+        string[] values = vectorString.Split(' ');
+        if (values.Length == 3)
+        {
+            float x = float.Parse(values[0]);
+            float z = float.Parse(values[1]);
+            float y = float.Parse(values[2]) * 0.5f;
+
+            return new Vector3(x, y, z);
+        }
+        else{
+            Debug.LogError("Only 3D vectors permited!");
+
+            return new Vector3(0.0f, 0.0f, 0.0f);
+        }
+
     }
 
     Vector3 ParseVector3(string vectorString)
@@ -188,7 +215,8 @@ public class MuJoCoSceneParser : MonoBehaviour
         else if (values.Length == 2)
         {
             float z = float.Parse(values[0]);
-            float x = float.Parse(values[1]);
+            // Geom cylinder height parameter represents half-height of cylinder height.
+            float h = float.Parse(values[1]) * 0.5f;
 
             return new Vector3(x, 0.0f, z);
         }
